@@ -1,0 +1,37 @@
+<div id="<%= dom_id asset %>" class="card w-full sm:w-auto">
+  <div class="card-body">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="font-semibold text-lg"><%= asset.name %></h2>
+        <div class="mt-1 flex items-center gap-2">
+          <%= status_badge(asset.status) if asset.status.present? %>
+          <span class="badge badge-slate badge-sm"><%= asset.category.titleize %></span>
+        </div>
+      </div>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <% unless local_assigns[:hide_show] %>
+          <%= link_to "Show", asset_path(asset), class: "btn btn-ghost" %>
+        <% end %>
+        <%= link_to "Edit", edit_asset_path(asset), class: "btn btn-ghost" %>
+        <%= button_to "Destroy", asset, method: :delete,
+              data: { turbo_confirm: "Are you sure?" },
+              class: "btn btn-danger" %>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4 text-sm text-gray-700">
+      <div>
+        <strong class="block font-medium mb-1">Latitude:</strong>
+        <%= asset.latitude %>
+      </div>
+      <div>
+        <strong class="block font-medium mb-1">Longitude:</strong>
+        <%= asset.longitude %>
+      </div>
+      <div class="sm:col-span-2">
+        <strong class="block font-medium mb-1">Metadata:</strong>
+        <%= asset.metadata.presence || "—" %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,23 @@
+<% content_for :title, @work_order.title %>
+
+<div class="max-w-3xl space-y-4">
+  <h1 class="text-2xl font-semibold"><%= @work_order.title %></h1>
+  <div class="rounded-xl border bg-white p-4 space-y-2">
+    <div><strong>Asset:</strong> <%= link_to @work_order.asset.name, @work_order.asset %></div>
+    <div><strong>Status:</strong> <%= @work_order.status.humanize %></div>
+    <div><strong>Priority:</strong> <%= @work_order.priority.humanize %></div>
+    
+    <% if @work_order.assigned_to.present? %>
+      <div><strong>Assigned to:</strong> <%= @work_order.assigned_to %></div>
+    <% end %>
+    <% if @work_order.description.present? %>
+      <div class="pt-2"><strong>Description</strong><div class="prose"><%= simple_format @work_order.description %></div></div>
+    <% end %>
+  </div>
+
+  <div class="flex gap-2">
+    <%= link_to "Edit", edit_work_order_path(@work_order), class: "px-3 py-2 rounded bg-gray-100 hover:bg-gray-50" %>
+    <%= link_to "Back to work orders", (@work_order.asset ? asset_work_orders_path(@work_order.asset) : work_orders_path),
+                class: "px-3 py-2 rounded bg-gray-100 hover:bg-gray-50" %>
+  </div>
+</div>

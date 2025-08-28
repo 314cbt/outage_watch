@@ -1,0 +1,25 @@
+<div id="<%= dom_id incident %>" class="card">
+  <div class="card-header flex items-center justify-between">
+    <span>Incident on <%= link_to(incident.asset&.name || "Unknown asset", incident.asset ? asset_path(incident.asset) : "#") %></span>
+    <div class="flex items-center gap-2">
+      <%= status_badge(incident.status) %>
+    </div>
+  </div>
+
+  <div class="card-body space-y-2">
+    <p><strong>Severity:</strong> <%= severity_badge(incident.severity) %></p>
+
+    <p>
+      <strong>Started at:</strong>
+      <%= incident.started_at&.strftime("%Y-%m-%d %H:%M") || "—" %>
+    </p>
+
+    <p>
+      <strong>Resolved at:</strong>
+      <%= incident.resolved_at&.strftime("%Y-%m-%d %H:%M") || "—" %>
+    </p>
+
+    <p><strong>Cause:</strong> <%= incident.cause.presence || "—" %></p>
+    <p><strong>Notes:</strong> <%= incident.notes.presence || "—" %></p>
+  </div>
+</div>

@@ -1,0 +1,168 @@
+<% content_for :title, "Dashboard" %>
+
+<div class="w-full">
+  <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+    <h1 class="font-bold text-4xl">Outage Watch</h1>
+    <div class="flex flex-wrap gap-2">
+    <!--
+      <%= link_to "Assets", assets_path, class: "btn btn-ghost" %>
+      <%= link_to "Incidents", incidents_path, class: "btn btn-ghost" %>
+      <%= link_to "Work Orders", work_orders_path, class: "btn btn-ghost" %>
+      <% if respond_to?(:map_assets_path) %>
+        <%= link_to "Assets Map", map_assets_path, class: "btn btn-ghost" %>
+      <% end %>
+      -->
+    </div>
+  </div> 
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+    <div class="card"><div class="card-body">
+      <div class="text-sm text-gray-500">Assets</div>
+      <div class="mt-1 text-3xl font-semibold"><%= @assets_count %></div>
+      <div class="mt-3"><%= link_to "View all", assets_path, class: "text-blue-600 hover:underline" %></div>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <div class="text-sm text-gray-500">Incidents</div>
+      <div class="mt-1 text-3xl font-semibold"><%= @incidents_count %></div>
+      <div class="mt-3"><%= link_to "View all", incidents_path, class: "text-blue-600 hover:underline" %></div>
+    </div></div>
+
+    <div class="card"><div class="card-body">
+      <div class="text-sm text-gray-500">Work Orders</div>
+      <div class="mt-1 text-3xl font-semibold"><%= @work_orders_count %></div>
+      <div class="mt-3"><%= link_to "View all", work_orders_path, class: "text-blue-600 hover:underline" %></div>
+    </div></div>
+  </div>
+
+  <div id="dashboard-map" class="card mb-6">
+    <div class="card-header">Network Map</div>
+    <div class="card-body">
+      <div id="map" class="h-[500px] w-full rounded-md border"></div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("turbo:load", () => {
+      const map = L.map('map').setView([33.5, -86.8], 10);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+
+      const assets = <%= raw @assets.to_json %>;
+
+      assets.forEach(asset => {
+        if (!asset.latitude || !asset.longitude) return;
+        const marker = L.marker([asset.latitude, asset.longitude]).addTo(map);
+        marker.bindPopup(`
+          <strong>${asset.name}</strong><br>
+          ${asset.category || "No category"}<br>
+          Status: ${asset.status || "unknown"}
+        `);
+      });
+    });
+  </script>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div class="card">
+      <div class="card-header">Recent Incidents</div>
+      <div class="card-body">
+        <% if @recent_incidents.any? %>
+          <ul class="space-y-3">
+            <% @recent_incidents.each do |incident| %>
+              <li class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="font-medium">
+                    <%= link_to display_name_for(incident), incident %>
+                  </div>
+                  <div class="mt-1 text-xs text-gray-500">
+                    Updated <%= time_ago_in_words(incident.updated_at) %> ago
+                  </div>
+                </div>
+                <div class="shrink-0">
+                  <%= status_badge(incident.status, size: :sm) %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-gray-500">No incidents yet.</p>
+        <% end %>
+        <!-- <div class="mt-4"><%= link_to "All incidents", incidents_path, class: "btn btn-ghost" %></div> -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Recent Work Orders</div>
+      <div class="card-body">
+        <% if @recent_work_orders.any? %>
+          <ul class="space-y-3">
+            <% @recent_work_orders.each do |wo| %>
+              <li class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="font-medium">
+                    <%= link_to display_name_for(wo), wo %>
+                  </div>
+                  <div class="mt-1 text-xs text-gray-500">
+                    Updated <%= time_ago_in_words(wo.updated_at) %> ago
+                  </div>
+                </div>
+                <div class="shrink-0">
+                  <% if wo.respond_to?(:priority) && wo.priority.present? %>
+                    <%= severity_badge(wo.priority, size: :sm) %>
+                  <% elsif wo.respond_to?(:severity) && wo.severity.present? %>
+                    <%= severity_badge(wo.severity, size: :sm) %>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-gray-500">No work orders yet.</p>
+        <% end %>
+        <!-- <div class="mt-4"><%= link_to "All work orders", work_orders_path, class: "btn btn-ghost" %></div> -->
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">Recent Assets</div>
+      <div class="card-body">
+        <% if @recent_assets.any? %>
+          <ul class="space-y-3">
+            <% @recent_assets.each do |asset| %>
+              <li class="flex items-start justify-between gap-2">
+                <div>
+                  <div class="font-medium">
+                    <%= link_to(asset.name.presence || "Asset ##{asset.id}", asset) %>
+                  </div>
+                  <div class="mt-1 text-xs text-gray-500">
+                    Updated <%= time_ago_in_words(asset.updated_at) %> ago
+                  </div>
+                </div>
+                <div class="shrink-0 flex items-center gap-2">
+                  <% if asset.respond_to?(:status) && asset.status.present? %>
+                    <%= status_badge(asset.status, size: :sm) %>
+                  <% end %>
+                  <% if asset.respond_to?(:category) && asset.category.present? %>
+                    <span class="badge badge-slate badge-sm"><%= asset.category.to_s.humanize %></span>
+                  <% end %>
+                </div>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-sm text-gray-500">No assets yet.</p>
+        <% end %>
+        <div class="mt-4 flex flex-wrap gap-2">
+        <!--
+          <%= link_to "All assets", assets_path, class: "btn btn-ghost" %>
+          <% if respond_to?(:map_assets_path) %>
+            <%= link_to "View map", map_assets_path, class: "btn btn-ghost" %>
+          <% end %>
+          -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

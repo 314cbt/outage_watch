@@ -1,0 +1,60 @@
+<%= form_with model: (@asset ? [@asset, @work_order] : @work_order),
+              local: true, class: "space-y-5" do |form| %>
+
+  <% if @work_order.errors.any? %>
+    <div class="rounded-lg border border-red-200 bg-red-50 p-3 text-red-700">
+      <strong><%= pluralize(@work_order.errors.count, "error") %></strong> prevented saving:
+      <ul class="list-disc pl-6">
+        <% @work_order.errors.full_messages.each do |m| %><li><%= m %></li><% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <% if @asset %>
+    <%= form.hidden_field :asset_id, value: @asset.id %>
+  <% else %>
+    <div>
+      <%= form.label :asset_id, "Asset" %>
+      <%= form.collection_select :asset_id, Asset.order(:name), :id, :name, {}, class: "select" %>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title %>
+    <%= form.text_field :title, class: "input" %>
+  </div>
+
+  <div>
+    <%= form.label :description %>
+    <%= form.text_area :description, rows: 5, class: "textarea" %>
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <div>
+      <%= form.label :status %>
+      <%= form.select :status,
+            WorkOrder.statuses.keys.map { |k| [k.humanize, k] },
+            {}, class: "select" %>
+    </div>
+    <div>
+      <%= form.label :priority %>
+      <%= form.select :priority,
+            WorkOrder.priorities.keys.map { |k| [k.humanize, k] },
+            {}, class: "select" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :assigned_to %>
+    <%= form.text_field :assigned_to, placeholder: "name or team", class: "input" %>
+  </div>
+
+  <%= form.submit (@work_order.persisted? ? "Update Work Order" : "Create Work Order"),
+                  class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-medium" %>
+                    
+<div>
+  <%= form.label :assigned_to %>
+  <%= form.text_field :assigned_to, placeholder: "name or team", class: "input" %>
+</div>
+
+<% end %>

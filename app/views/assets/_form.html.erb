@@ -1,0 +1,46 @@
+<%= form_with(model: asset, local: true) do |f| %>
+  <%= render "shared/form_errors", object: asset %>
+
+  <div class="space-y-4">
+    <div>
+      <%= f.label :name, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_field :name, class: "input w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :category, class: "block text-sm font-medium mb-1" %>
+      <%= f.select :category,
+            options_for_select(Asset::CATEGORIES.map { |c| [c.titleize, c] }, asset.category),
+            { include_blank: "Select category" },
+            class: "select w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :status, class: "block text-sm font-medium mb-1" %>
+      <%= f.select :status,
+            options_for_select(Asset.statuses.keys.map { |s| [s.humanize, s] }, asset.status),
+            { include_blank: "Select status" },
+            class: "select w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :latitude, class: "block text-sm font-medium mb-1" %>
+      <%= f.number_field :latitude, step: :any, class: "input w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :longitude, class: "block text-sm font-medium mb-1" %>
+      <%= f.number_field :longitude, step: :any, class: "input w-full" %>
+    </div>
+
+    <div>
+      <%= f.label :metadata, class: "block text-sm font-medium mb-1" %>
+      <%= f.text_area :metadata, rows: 3, class: "textarea w-full", placeholder: "Optional notes or JSON" %>
+    </div>
+  </div>
+
+  <div class="mt-6 flex gap-3 justify-center">
+    <%= f.submit (asset.persisted? ? "Update Asset" : "Create Asset"), class: "btn btn-primary px-6" %>
+    <%= link_to "Cancel", asset.persisted? ? asset_path(asset) : assets_path, class: "btn btn-ghost px-6" %>
+  </div>
+<% end %>

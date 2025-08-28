@@ -1,0 +1,54 @@
+<% content_for :title, "Work Orders" %>
+
+<div class="w-full">
+  <% if notice.present? %>
+    <p class="py-2 px-3 bg-green-50 mb-5 text-green-500 font-medium rounded-md inline-block" id="notice">
+      <%= notice %>
+    </p>
+  <% end %>
+
+  <div class="flex justify-between items-center mb-4">
+    <h1 class="font-bold text-4xl">
+      Work Orders<%= " for #{@asset.name}" if @asset %>
+    </h1>
+    <% if @asset %>
+      <%= link_to "New Work Order", new_asset_work_order_path(@asset),
+          class: "rounded-md px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white block font-medium" %>
+    <% end %>
+  </div>
+
+  <div class="card">
+    <div class="card-body p-0">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Asset</th>
+            <th>Title</th>
+            <th>Status</th>
+            <th>Scheduled For</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @work_orders.each do |wo| %>
+            <tr>
+              <td>
+                <%= wo.asset ? link_to(wo.asset.name, asset_path(wo.asset), class: "underline") : "—" %>
+              </td>
+              <td><%= wo.title %></td>
+              <td><%= status_badge(wo.status) %></td>
+              <td><%= wo.scheduled_for&.strftime("%Y-%m-%d %H:%M") || "—" %></td>
+              <td class="text-right">
+                <%= link_to "Show", work_order_path(wo), class: "btn btn-ghost" %>
+                <%= link_to "Edit", edit_work_order_path(wo), class: "btn btn-ghost" %>
+                <%= link_to "Delete", work_order_path(wo),
+                    data: { turbo_method: :delete, turbo_confirm: "Delete this work order?" },
+                    class: "btn btn-danger ml-2" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

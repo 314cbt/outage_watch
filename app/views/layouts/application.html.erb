@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title><%= content_for?(:title) ? yield(:title) : "OutageWatch" %></title>
+
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <link rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+        crossorigin="">
+
+  <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
+  
+  <%= javascript_importmap_tags %>
+</head>
+
+<body class="h-full bg-gray-50 text-gray-900">
+  <nav class="bg-blue-600 text-white">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-14 items-center justify-between">
+        <div class="flex items-center space-x-1">
+
+          <%= link_to "Home", root_path,
+              class: [
+                "px-3 py-2 rounded text-sm font-medium",
+                current_page?(root_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+              ].join(" ") %>
+
+          <%= link_to "Assets", assets_path,
+              class: [
+                "px-3 py-2 rounded text-sm font-medium",
+                current_page?(assets_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+              ].join(" ") %>
+
+          <%= link_to "Incidents", incidents_path,
+              class: [
+                "px-3 py-2 rounded text-sm font-medium",
+                current_page?(incidents_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+              ].join(" ") %>
+
+          <%= link_to "Work Orders", work_orders_path,
+              class: [
+                "px-3 py-2 rounded text-sm font-medium",
+                current_page?(work_orders_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+              ].join(" ") %>
+
+          <%= link_to "Map", map_path,
+              class: [
+                "px-3 py-2 rounded text-sm font-medium",
+                current_page?(map_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+              ].join(" ") %>
+        </div>
+
+        <div class="flex items-center">
+          <% if user_signed_in? %>
+            <span class="mr-4 text-sm">Signed in as <%= current_user.email %></span>
+            <%= link_to "Log out",
+                destroy_user_session_path,
+                data: { turbo_method: :delete },
+                class: "bg-red-500 hover:bg-red-600 px-3 py-2 rounded text-sm font-medium" %>
+          <% else %>
+            <%= link_to "Log in",
+                new_user_session_path,
+                class: "bg-green-500 hover:bg-green-600 px-3 py-2 rounded text-sm font-medium" %>
+            <%= link_to "Sign up",
+                new_user_registration_path,
+                class: "bg-gray-900 hover:bg-gray-800 text-white px-3 py-2 rounded text-sm font-medium ml-2" %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
+    <%= render "shared/flash" %>
+
+    <%= yield %>
+  </main>
+</body>
+</html>

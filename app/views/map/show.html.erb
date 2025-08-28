@@ -1,0 +1,80 @@
+<% content_for :title, "Network Map" %>
+
+<div class="w-full">
+  <h1 class="font-bold text-4xl mb-4">Network Map</h1>
+
+  <div id="map" class="h-[600px] w-full rounded-md border"></div>
+</div>
+
+<script>
+  function initNetworkMap() {
+    const el = document.getElementById("map");
+    if (!el) return;
+
+    if (el._leaflet_id) {
+      el._leaflet_id = null;
+      el.replaceWith(el.cloneNode(true));
+    }
+
+    const map = L.map('map').setView([33.5, -86.8], 10);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    const assets    = <%= raw @assets.to_json %>;
+    const icon = (url) => L.icon({ iconUrl: url, iconSize: [28, 28], iconAnchor: [14, 28] });
+    const ICONS = {
+      assetActive:      icon('https://maps.google.com/mapfiles/ms/icons/green-dot.png'),
+      assetMaintenance: icon('https://maps.google.com/mapfiles/ms/icons/yellow-dot.png'),
+      assetDown:        icon('https://maps.google.com/mapfiles/ms/icons/red-dot.png'),
+      incident:         icon('https://maps.google.com/mapfiles/ms/icons/red-dot.png')
+    };
+
+    const iconForAsset = (status) => {
+      switch ((status || '').toLowerCase()) {
+        case 'active':      return ICONS.assetActive;
+        case 'maintenance': return ICONS.assetMaintenance;
+        case 'down':        return ICONS.assetDown;
+        default:            return ICONS.assetActive;
+      }
+    };
+
+    const assetLayer    = L.layerGroup().addTo(map);
+
+    assets.forEach(a => {
+      if (!a.latitude || !a.longitude) return;
+
+      const popupHtml = `
+        <div class="p-2">
+          <div class="font-semibold text-gray-800">${a.name || "Asset"}</div>
+          <div class="text-xs text-gray-600">${a.category || "Unknown type"}</div>
+          <div class="mt-1 text-xs">
+            <span class="font-medium">Status:</span> ${a.status || "unknown"}
+          </div>
+          <div class="mt-2">
+            <a href="/network_assets/${a.id}" class="text-blue-600 hover:underline text-xs">View Asset →</a>
+          </div>
+        </div>
+      `;
+
+      L.marker([a.latitude, a.longitude], { icon: iconForAsset(a.status) })
+        .addTo(assetLayer)
+        .bindPopup(popupHtml);
+    });
+
+    const allLatLngs = [];
+    assetLayer.eachLayer(m => allLatLngs.push(m.getLatLng()));
+    incidentLayer.eachLayer(m => allLatLngs.push(m.getLatLng()));
+
+    if (allLatLngs.length > 0) {
+      map.fitBounds(L.latLngBounds(allLatLngs), { padding: [30, 30] });
+    }
+
+    // Optional: Layer control
+    L.control.layers(null, { "Assets": assetLayer, "Incidents": incidentLayer }, { collapsed: true }).addTo(map);
+  }
+
+  document.addEventListener("turbo:load", initNetworkMap);
+  document.addEventListener("DOMContentLoaded", initNetworkMap);
+</script>
