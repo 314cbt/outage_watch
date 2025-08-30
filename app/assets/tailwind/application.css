@@ -1,39 +1,62 @@
 @import "tailwindcss";
 
+/* Global component styles */
 @layer components {
+  /* Layout */
   .container-app { @apply max-w-6xl mx-auto px-4; }
 
-  .card { @apply bg-white shadow-sm rounded-2xl border border-gray-200; }
-  .card-body { @apply p-6; }
+  /* Cards */
+  .card        { @apply bg-white shadow-sm rounded-2xl border border-gray-200; }
+  .card-body   { @apply p-6; }
   .card-header { @apply p-6 border-b border-gray-200 font-semibold text-lg; }
 
-  .btn { @apply inline-flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium transition hover:shadow-sm; }
-  .btn-primary { @apply bg-gray-900 text-white border-gray-900 hover:bg-gray-800; }
-  .btn-ghost { @apply border-transparent hover:bg-gray-50; }
-  .btn-danger { @apply bg-red-600 text-white border-red-600 hover:bg-red-500; }
-
-  .input {
-  @apply w-full rounded-xl border border-gray-300 
-         focus:border-gray-900 focus:ring-gray-900;
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition hover:shadow-sm
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-300;
   }
-  .select { @apply w-full rounded-xl border-gray-300 focus:border-gray-900 focus:ring-gray-900; }
-  .textarea { @apply w-full rounded-xl border-gray-300 focus:border-gray-900 focus:ring-gray-900; }
+  .btn-primary { @apply bg-gray-900 text-white border-gray-900 hover:bg-gray-800; }
+  /* Stronger, outlined neutral button (global) */
+  .btn-ghost   { @apply border-2 border-gray-300 text-gray-800 bg-white hover:bg-gray-100 hover:border-gray-600; }
+  .btn-danger  { @apply bg-red-600 text-white border-red-600 hover:bg-red-500; }
 
-  .table { @apply w-full text-left text-sm; }
+  /* Form fields (global rounded corners + padding) */
+  .input {
+    @apply w-full px-3 py-2 rounded-xl border border-gray-300
+           focus:border-gray-900 focus:ring-gray-900;
+  }
+  .select {
+    @apply w-full px-3 py-2 rounded-xl border border-gray-300
+           focus:border-gray-900 focus:ring-gray-900;
+  }
+  .textarea {
+    @apply w-full px-3 py-2 rounded-xl border border-gray-300
+           focus:border-gray-900 focus:ring-gray-900;
+  }
+
+  /* Tables */
+  .table          { @apply w-full text-left text-sm; }
   .table thead th { @apply bg-gray-50 font-semibold text-gray-700 px-3 py-2; }
   .table tbody td { @apply border-t border-gray-100 px-3 py-2; }
 
-    /* Badges (status / priority pills) */
-  .badge {
-    @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1;
-  }
+  /* Badges */
+  .badge        { @apply inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-medium ring-1; }
   .badge-green  { @apply bg-green-50  text-green-700  ring-green-200; }
-  .badge-yellow { @apply bg-yellow-50 text-yellow-800 ring-yellow-200; } /* keep yellow to match your current palette */
+  .badge-yellow { @apply bg-yellow-50 text-yellow-800 ring-yellow-200; }
   .badge-red    { @apply bg-red-50    text-red-700    ring-red-200; }
   .badge-slate  { @apply bg-slate-50  text-slate-700  ring-slate-200; }
 
-  /* Optional sizes */
   .badge-sm { @apply text-[10px] px-2 py-[1px]; }
   .badge-lg { @apply text-sm px-3 py-1; }
 
+  /* Optional reusable label class for future forms */
+  .form-label { @apply block text-base md:text-lg font-medium mb-1 leading-6 text-gray-800; }
+}
+
+/* Final overrides (loaded last) */
+@layer utilities {
+  /* Global label override for your existing label pattern */
+  label.block.font-medium.mb-1 {
+    @apply !text-xl md:!text-2xl !leading-7 !text-red-700;
+  }
 }
