@@ -77,7 +77,7 @@
       assetMaintenance: icon("https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"),
       assetDown:        icon("https://maps.google.com/mapfiles/ms/icons/red-dot.png"),
     };
-    
+
     const iconFor = (s) => {
       s = (s || "").toString().toLowerCase();
       if (s === "active") return ICONS.assetActive;
@@ -137,9 +137,6 @@
   document.addEventListener("turbo:render", initHomeMap);
   document.addEventListener("DOMContentLoaded", initHomeMap);
 </script>
-
-
-
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <div class="card">

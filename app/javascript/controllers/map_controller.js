@@ -3,8 +3,8 @@ import * as L from "leaflet"
 
 export default class extends Controller {
   static values = {
-    assets: Array,                 // normal way (data-map-assets-value='[...]')
-    assetsBase64: String,          // robust way (data-map-assets-base64-value='...')
+    assets: Array,
+    assetsBase64: String,
     centerLat: Number,
     centerLng: Number,
     zoom: { type: Number, default: 11 },
@@ -24,10 +24,8 @@ export default class extends Controller {
 
     this.assetLayer = L.layerGroup().addTo(this.map)
 
-    // ---------- get assets, very robust ----------
     let assets = this.assetsValue
     if (!assets || assets.length === 0) {
-      // Try base64 attribute (rock-solid)
       if (this.hasAssetsBase64Value) {
         try {
           assets = JSON.parse(atob(this.assetsBase64Value)) || []
@@ -38,7 +36,6 @@ export default class extends Controller {
       }
     }
     if (!assets || assets.length === 0) {
-      // Try inline JSON <script type="application/json" data-map-assets>
       try {
         const jsonEl = this.element.querySelector('script[type="application/json"][data-map-assets]')
         if (jsonEl) assets = JSON.parse(jsonEl.textContent || "[]")
@@ -48,7 +45,6 @@ export default class extends Controller {
     }
     assets = assets || []
     console.log("map assets count:", assets.length)
-    // ---------------------------------------------
 
     const icon = (url) => L.icon({ iconUrl: url, iconSize: [28, 28], iconAnchor: [14, 28] })
     const ICONS = {
@@ -81,7 +77,6 @@ export default class extends Controller {
         .bindPopup(popupHtml)
     })
 
-    // Initial view + auto-fit
     const hasCenter = this.hasCenterLatValue && this.hasCenterLngValue
     this.map.setView(hasCenter ? [this.centerLatValue, this.centerLngValue] : [37.8, -96], this.zoomValue)
 
