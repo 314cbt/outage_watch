@@ -1,0 +1,21 @@
+name: prod-ssl
+type: Environment
+
+network:
+  vpc:
+    id: vpc-093300610208d9bea
+    subnets:
+      public:
+        - id: subnet-002f0f7d541a8189e   # us-east-1a (public)
+        - id: subnet-00590148dfbb14191   # us-east-1b (public)
+      private:
+        - id: subnet-0bf288999658c7388   # private
+        - id: subnet-0e6c5b29a431e2c3a   # private
+
+http:
+  public:
+    certificates:
+      - arn:aws:acm:us-east-1:381491867040:certificate/86eda047-4c74-4f93-b666-dd3534b3118c
+
+observability:
+  container_insights: false

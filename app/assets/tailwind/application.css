@@ -2,6 +2,10 @@
 
 /* Global component styles */
 @layer components {
+
+  label {
+    @apply text-xl font-semibold text-gray-800;
+  }
   /* Layout */
   .container-app { @apply max-w-6xl mx-auto px-4; }
 
@@ -13,11 +17,11 @@
   /* Buttons */
   .btn {
     @apply inline-flex items-center gap-2 px-3 py-2 rounded-xl border text-sm font-medium transition hover:shadow-sm
-           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-gray-300;
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-300;
   }
   .btn-primary { @apply bg-gray-900 text-white border-gray-900 hover:bg-gray-800; }
   /* Stronger, outlined neutral button (global) */
-  .btn-ghost   { @apply border-2 border-gray-300 text-gray-800 bg-white hover:bg-gray-100 hover:border-gray-600; }
+  .btn-ghost   { @apply border-2 border-gray-300 text-gray-800 bg-white hover:bg-gray-100 hover:border-gray-600 focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2; }
   .btn-danger  { @apply bg-red-600 text-white border-red-600 hover:bg-red-500; }
 
   /* Form fields (global rounded corners + padding) */
@@ -51,12 +55,4 @@
 
   /* Optional reusable label class for future forms */
   .form-label { @apply block text-base md:text-lg font-medium mb-1 leading-6 text-gray-800; }
-}
-
-/* Final overrides (loaded last) */
-@layer utilities {
-  /* Global label override for your existing label pattern */
-  label.block.font-medium.mb-1 {
-    @apply !text-xl md:!text-2xl !leading-7 !text-red-700;
-  }
 }

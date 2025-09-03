@@ -1,16 +1,14 @@
 <div class="space-y-2">
   <% flash.each do |type, message| %>
     <% next if message.blank? %>
-    <% classes =
-         case type.to_s
-         when "notice", "success"
-           "bg-green-50 text-green-900 ring-green-200"
-         when "alert", "error"
-           "bg-red-50 text-red-900 ring-red-200"
-         else
-           "bg-blue-50 text-blue-900 ring-blue-200"
-         end
-    %>
-    <div class="rounded-2xl ring-1 px-4 py-3 <%= classes %>"><%= message %></div>
+    <% css =
+        case type.to_sym
+        when :notice, :success then "bg-green-50 text-green-700 border-green-200"
+        when :alert, :error   then "bg-red-50 text-red-700 border-red-200"
+        else                        "bg-slate-50 text-slate-700 border-slate-200"
+        end %>
+    <div class="my-4 px-4 py-3 border rounded-xl <%= css %>" role="alert">
+      <%= message %>
+    </div>
   <% end %>
 </div>

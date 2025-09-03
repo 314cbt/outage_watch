@@ -1,0 +1,37 @@
+name: web
+type: Load Balanced Web Service
+
+http:
+  path: '/'
+  alias:
+    - www.clemsonthompson.com
+  healthcheck:
+    path: '/up'
+    success_codes: '200'
+    interval: 10s
+    timeout: 5s
+    healthy_threshold: 2
+    unhealthy_threshold: 2
+    grace_period: 60s
+
+image:
+  build: ./Dockerfile
+  port: 3000
+
+cpu: 256
+memory: 512
+count: 1
+exec: true
+network:
+  connect: false
+
+variables:
+  RAILS_ENV: production
+  RAILS_LOG_TO_STDOUT: 'true'
+  RAILS_SERVE_STATIC_FILES: 'true'
+  ACTIVE_STORAGE_BUCKET: outage-watch-prod-ssl-web-addonsstac-uploadsbucket-fqfu1syl2pt9
+
+
+secrets:
+  DATABASE_URL: /copilot/outage-watch/prod-ssl/secrets/DATABASE_URL
+  RAILS_MASTER_KEY: /copilot/outage-watch/prod-ssl/secrets/RAILS_MASTER_KEY

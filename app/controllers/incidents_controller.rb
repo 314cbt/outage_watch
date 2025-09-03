@@ -3,8 +3,29 @@ class IncidentsController < ApplicationController
   before_action :set_asset,    only: %i[index new create]
 
   def index
-    @incidents = @asset ? @asset.incidents.order(started_at: :desc)
-                        : Incident.includes(:asset).order(started_at: :desc)
+    @incidents = @asset ? @asset.incidents : Incident.includes(:asset)
+
+    if params[:status].present?
+      @incidents = @incidents.where(status: params[:status])
+    end
+
+    if params[:severity].present?
+      @incidents = @incidents.where(severity: params[:severity])
+    end
+
+    if params[:started_from].present?
+      @incidents = @incidents.where('started_at >= ?', params[:started_from])
+    end
+
+    if params[:started_to].present?
+      @incidents = @incidents.where('started_at <= ?', params[:started_to])
+    end
+
+    if params[:q].present?
+      @incidents = @incidents.where('cause ILIKE :q OR notes ILIKE :q', q: "%#{params[:q]}%")
+    end
+
+    @incidents = @incidents.order(started_at: :desc)
   end
 
   def new

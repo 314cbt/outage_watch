@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   devise_for :users
 
+  get "/up", to: proc { [200, {"Content-Type"=>"text/plain"}, ["OK"]] }
+
   resources :assets, path: "network_assets" do
     resources :incidents, shallow: true do
       resources :incident_events, shallow: true
