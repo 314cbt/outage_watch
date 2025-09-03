@@ -50,6 +50,19 @@ gem "bootsnap", require: false
 # Use is a library that handles auth
 gem "devise"
 
+group :development, :test do
+  gem "rspec-rails", "~> 6.0"
+  gem "factory_bot_rails"
+  gem "faker"
+end
+
+group :test do
+  gem "capybara"
+  gem "selenium-webdriver"
+  gem "webdrivers" # optional locally; CI can use system chrome/chromedriver
+  # optional accessibility checks:
+  # gem "axe-core-rspec"
+end
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -72,3 +85,4 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+gem "aws-sdk-s3", "~> 1.145"
