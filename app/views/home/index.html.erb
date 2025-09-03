@@ -36,33 +36,110 @@
   </div>
 
   <div id="dashboard-map" class="card mb-6">
-    <div class="card-header">Network Map</div>
-    <div class="card-body">
-      <div id="map" class="h-[500px] w-full rounded-md border"></div>
-    </div>
+  <div class="card-header">Network Map</div>
+  <div class="card-body">
+    <div id="home-map" class="h-[500px] w-full rounded-md border" style="height:500px"></div>
   </div>
+</div>
 
-  <script>
-    document.addEventListener("turbo:load", () => {
-      const map = L.map('map').setView([33.5, -86.8], 10);
+<script>
+  let _homeMap, _homeMapResizeObs;
 
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
+  function initHomeMap() {
+    const el = document.getElementById("home-map");
+    if (!el) return;
 
-      const assets = <%= raw @assets.to_json %>;
+    if (_homeMap) {
+      try { _homeMap.remove(); } catch(_) {}
+      _homeMap = null;
+    }
+    if (_homeMapResizeObs) {
+      try { _homeMapResizeObs.disconnect(); } catch(_) {}
+      _homeMapResizeObs = null;
+    }
 
-      assets.forEach(asset => {
-        if (!asset.latitude || !asset.longitude) return;
-        const marker = L.marker([asset.latitude, asset.longitude]).addTo(map);
-        marker.bindPopup(`
-          <strong>${asset.name}</strong><br>
-          ${asset.category || "No category"}<br>
-          Status: ${asset.status || "unknown"}
-        `);
-      });
+    if (!el.style.height) el.style.height = "500px";
+
+    // Create map
+    const map = L.map(el).setView([33.5, -86.8], 10);
+    _homeMap = map;
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap contributors",
+      maxZoom: 19
+    }).addTo(map);
+
+    const assets = <%= raw @assets.to_json %>;
+
+    const icon = (url) => L.icon({ iconUrl: url, iconSize: [28, 28], iconAnchor: [14, 28] });
+    const ICONS = {
+      assetActive:      icon("https://maps.google.com/mapfiles/ms/icons/green-dot.png"),
+      assetMaintenance: icon("https://maps.google.com/mapfiles/ms/icons/yellow-dot.png"),
+      assetDown:        icon("https://maps.google.com/mapfiles/ms/icons/red-dot.png"),
+    };
+    
+    const iconFor = (s) => {
+      s = (s || "").toString().toLowerCase();
+      if (s === "active") return ICONS.assetActive;
+      if (s === "maintenance") return ICONS.assetMaintenance;
+      if (s === "down" || s === "outage" || s === "resolved") return ICONS.assetDown;
+      return ICONS.assetActive;
+    };
+
+    const layer = L.layerGroup().addTo(map);
+    (assets || []).forEach(a => {
+      if (a.latitude == null || a.longitude == null) return;
+      const popupHtml = `
+        <div class="p-2">
+          <div class="font-semibold text-gray-800">${a.name || "Asset"}</div>
+          <div class="text-xs text-gray-600">${a.category || "Unknown type"}</div>
+          <div class="mt-1 text-xs"><span class="font-medium">Status:</span> ${a.status || "unknown"}</div>
+          <div class="mt-2">
+            <a href="/network_assets/${a.id}" class="text-blue-600 hover:underline text-xs">View Asset →</a>
+          </div>
+        </div>
+      `;
+      L.marker([a.latitude, a.longitude], { icon: iconFor(a.status) })
+        .addTo(layer)
+        .bindPopup(popupHtml);
     });
-  </script>
+
+    const latlngs = [];
+    layer.eachLayer(m => latlngs.push(m.getLatLng()));
+    if (latlngs.length) {
+      map.fitBounds(L.latLngBounds(latlngs), { padding: [30, 30] });
+    }
+
+    map.whenReady(() => {
+      map.invalidateSize();
+      setTimeout(() => map.invalidateSize(), 50);
+      setTimeout(() => map.invalidateSize(), 250);
+    });
+
+    _homeMapResizeObs = new ResizeObserver(() => {
+      if (_homeMap) _homeMap.invalidateSize();
+    });
+    _homeMapResizeObs.observe(el);
+
+    window.addEventListener("load", () => {
+      if (_homeMap) _homeMap.invalidateSize();
+    }, { once: true });
+
+    document.addEventListener("turbo:before-cache", () => {
+      try { if (_homeMap) _homeMap.remove(); } catch(_) {}
+      _homeMap = null;
+      try { if (_homeMapResizeObs) _homeMapResizeObs.disconnect(); } catch(_) {}
+      _homeMapResizeObs = null;
+    }, { once: true });
+  }
+
+  document.addEventListener("turbo:load", initHomeMap);
+  document.addEventListener("turbo:render", initHomeMap);
+  document.addEventListener("DOMContentLoaded", initHomeMap);
+</script>
+
+
+
 
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
     <div class="card">
