@@ -14,7 +14,6 @@
         crossorigin="">
 
   <%= stylesheet_link_tag "tailwind", "data-turbo-track": "reload" %>
-  
   <%= javascript_importmap_tags %>
 </head>
 
@@ -53,6 +52,21 @@
                 "px-3 py-2 rounded text-sm font-medium",
                 current_page?(map_path) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
               ].join(" ") %>
+
+          <%# --- Admin-only links --- %>
+          <% if can_view_private_docs? %>
+            <%= link_to "Business Plan", doc_path("business-plan"),
+                class: [
+                  "px-3 py-2 rounded text-sm font-medium",
+                  current_page?(doc_path("business-plan")) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+                ].join(" ") %>
+
+            <%= link_to "SRS", doc_path("srs"),
+                class: [
+                  "px-3 py-2 rounded text-sm font-medium",
+                  current_page?(doc_path("srs")) ? "bg-blue-800 text-white" : "hover:bg-blue-700"
+                ].join(" ") %>
+          <% end %>
         </div>
 
         <div class="flex items-center">
@@ -77,7 +91,6 @@
 
   <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
     <%= render "shared/flash" %>
-
     <%= yield %>
   </main>
 </body>

@@ -3,6 +3,8 @@ Rails.application.routes.draw do
 
   get "/up", to: proc { [200, {"Content-Type"=>"text/plain"}, ["OK"]] }
 
+  resources :docs, only: [:index, :new, :create, :show]
+
   resources :assets, path: "network_assets" do
     resources :incidents, shallow: true do
       resources :incident_events, shallow: true

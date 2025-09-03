@@ -1,0 +1,18 @@
+<div class="mx-auto max-w-3xl py-8">
+  <div class="mb-4 flex items-center justify-between">
+    <h1 class="text-2xl font-semibold">Docs</h1>
+    <%= link_to "Upload", new_doc_path, class: "btn btn-focus-blue" %>
+  </div>
+
+  <ul class="divide-y">
+    <% @docs.each do |doc| %>
+      <li class="py-3 flex items-center justify-between">
+        <div>
+          <div class="font-medium"><%= doc.title %></div>
+          <div class="text-sm text-gray-500"><%= doc.slug %></div>
+        </div>
+        <%= link_to "Open", doc_path(doc.slug), class: "px-3 py-2 rounded-md hover:bg-gray-100" %>
+      </li>
+    <% end %>
+  </ul>
+</div>
