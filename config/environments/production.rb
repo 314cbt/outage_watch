@@ -15,6 +15,7 @@ Rails.application.configure do
 
   # --- Active Storage (S3 in prod) ---
   config.active_storage.service = :amazon
+  config.active_storage.resolve_model_to_route = :rails_storage_proxy
 
   # --- SSL / security ---
   config.force_ssl = true

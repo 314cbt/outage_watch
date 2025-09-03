@@ -1,0 +1,39 @@
+<div class="mx-auto max-w-5xl py-6 space-y-4">
+  <div class="flex items-center justify-between">
+    <h1 class="text-xl font-semibold"><%= @doc.title %></h1>
+    <%= link_to "Back", docs_path, class: "px-3 py-2 rounded-md hover:bg-gray-100 text-sm font-medium" %>
+  </div>
+
+  <% if @doc.file.attached? %>
+    <% ct = @doc.file.content_type %>
+
+    <% if ct == "application/pdf" %>
+      <div class="rounded-xl border shadow overflow-hidden bg-white">
+        <iframe
+          src="<%= rails_blob_path(@doc.file, disposition: "inline") %>"
+          class="w-full h-[80vh]"
+          title="<%= @doc.title %>">
+        </iframe>
+      </div>
+      <div class="mt-3">
+        <%= link_to "Download PDF",
+            rails_blob_path(@doc.file, disposition: "attachment"),
+            class: "px-3 py-2 rounded-md hover:bg-gray-100 text-sm font-medium" %>
+      </div>
+
+    <% else %>
+      <div class="rounded-xl border bg-white p-4">
+        <p class="text-sm text-gray-700 mb-2">
+          This document is a <strong><%= ct %></strong> (e.g., DOCX). Browsers don’t render it inline.
+          Use the button below to download.
+        </p>
+        <%= link_to "Download file",
+            rails_blob_path(@doc.file, disposition: "attachment"),
+            class: "inline-block px-3 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 text-sm font-medium" %>
+      </div>
+    <% end %>
+
+  <% else %>
+    <p class="text-gray-600">No file attached.</p>
+  <% end %>
+</div>
